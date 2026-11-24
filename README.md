@@ -61,6 +61,10 @@ Na Debian de WSL, `instalar.sh` non basta: WSL pecha a distribución cando
 non queda ningún proceso aberto, e os contedores páranse con ela. DAW Dev
 mantena aberta mentres hai servizos en marcha.
 
+Nun equipo con DAW Dev, `daw-start-doc` substitúe a `instalar.sh`. Os dous usan
+os mesmos portos: antes de `daw-start-doc`, `./instalar.sh parar`, e antes de
+`instalar.sh`, `daw-stop`.
+
 ## Licenzas
 
 O código deste repositorio ten licenza MIT. As imaxes levan contido doutros
@@ -74,7 +78,8 @@ os documentos de MDN que inclúe (CC BY-SA 2.5 ou posterior), e a documentación
   - a construción e o paquete;
   - a instalación sen as imaxes, que as carga e arranca os tres servizos `healthy`;
   - a repetición, que non carga nada, e un resumo alterado, que detén a carga desa imaxe;
-  - `daw-start-doc` e `daw-stop` de DAW Dev en Linux.
+  - `daw-start-doc` e `daw-stop` de DAW Dev en Linux, e `instalar.sh` no mesmo
+    equipo, cos contedores de DAW Dev parados.
 - Falta probar `daw-start-doc` nun equipo Windows da aula, coas imaxes do paquete.
 - O `Dockerfile` de DevDocs da MV non se constrúe co analizador actual de
   Docker, por un `python3 -c` de varias liñas; aquí ese código vai en

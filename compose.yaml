@@ -3,7 +3,8 @@
 # As imaxes constrúense unha vez con rede (scripts/empaquetar.sh) e
 # cárganse despois sen rede (scripts/instalar.sh). Con restart:
 # unless-stopped, os contedores volven arrancar cando arranca Docker.
-# daw-dev usa as mesmas imaxes e portos no seu perfil doc (daw-start-doc).
+# daw-dev usa as mesmas imaxes e portos no seu perfil doc (daw-start-doc), cos
+# nomes daw-doc-*; aquí os contedores levan os nomes por defecto de Compose.
 name: daw-doc
 
 services:
@@ -14,7 +15,6 @@ services:
       args:
         PHP_MANUAL_LANG: ${PHP_MANUAL_LANG:-en}
     image: ${DAW_DOC_IMAGE:-ghcr.io/miguelfm/daw-doc}-php:${PHP_MANUAL_LANG:-en}
-    container_name: daw-doc-php
     ports:
       - "${PHP_MANUAL_PORT:-8080}:80"
     restart: unless-stopped
@@ -26,7 +26,6 @@ services:
       args:
         DEVDOCS_LANGS: ${DEVDOCS_LANGS:-html css}
     image: ${DAW_DOC_IMAGE:-ghcr.io/miguelfm/daw-doc}-devdocs:latest
-    container_name: daw-doc-devdocs
     ports:
       - "${DEVDOCS_PORT:-5042}:9292"
     restart: unless-stopped
@@ -38,7 +37,6 @@ services:
       args:
         LARAVEL_VERSION: ${LARAVEL_VERSION:-12.x}
     image: ${DAW_DOC_IMAGE:-ghcr.io/miguelfm/daw-doc}-laravel:${LARAVEL_VERSION:-12.x}
-    container_name: daw-doc-laravel
     ports:
       - "${LARAVEL_DOCS_PORT:-8088}:80"
     restart: unless-stopped
