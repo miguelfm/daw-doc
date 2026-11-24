@@ -2,7 +2,7 @@
 
 Documentación técnica sen conexión para as aulas de Desenvolvemento de
 Aplicacións Web: tres servizos de Docker con buscador, pensados para os exames
-e para as aulas sen Internet.
+e para as clases sen Internet.
 
 | Servizo | Enderezo | Contido |
 |---|---|---|
@@ -10,14 +10,14 @@ e para as aulas sen Internet.
 | `devdocs` | <http://localhost:5042/> | DevDocs con HTML e CSS |
 | `laravel-docs` | <http://localhost:8088/> | Documentación de Laravel 12.x, co buscador lunr.js |
 
-É autónomo: non depende de `daw-dev`, aínda que nas aulas se instala na mesma
-distribución de WSL, `Debian-DAW`, e co mesmo Docker. Os portos son os da
-documentación da MV de `daw-vm`, de onde veñen os tres `Dockerfile`.
+É autónomo: funciona só con Docker. [DAW Dev](https://github.com/miguelfm/daw-dev)
+usa as mesmas imaxes e portos no seu perfil `doc`, coa orde `daw-start-doc`. Os
+`Dockerfile` veñen da documentación sen conexión da MV da aula.
 
-## Construír o paquete
+## Construír as imaxes
 
-As imaxes constrúense unha vez, nun equipo con Internet, e gárdanse nun
-paquete que se instala despois sen rede:
+As imaxes constrúense unha vez, nun equipo con Internet, e gárdanse para
+instalalas despois sen rede:
 
 ```bash
 scripts/empaquetar.sh            # deixa o paquete en dist/
@@ -25,55 +25,57 @@ scripts/empaquetar.sh            # deixa o paquete en dist/
 
 | Ficheiro | Contido |
 |---|---|
-| `daw-doc-imaxes.tar.gz` | As tres imaxes, gardadas con `docker save` (uns 66 MB) |
-| `SHA256SUMS` | O resumo do ficheiro anterior |
+| `daw-doc-php.tar.gz`, `daw-doc-devdocs.tar.gz`, `daw-doc-laravel.tar.gz` | Cada imaxe, gardada con `docker save` (uns 115 MB entre as tres) |
+| `SHA256SUMS` | Os resumos dos tres arquivos |
 | `compose.yaml` | O do proxecto |
 | `instalar.sh` | Carga as imaxes que falten e arranca os servizos |
-| `activar-dawdoc.ps1` | O mesmo desde Windows, na distribución de WSL da conta |
 
+Cada arquivo leva unha soa imaxe, como os rexistra o paquete da aula de DAW Dev.
 Para cambiar o idioma do manual, as linguaxes de DevDocs ou a versión de
 Laravel, `PHP_MANUAL_LANG`, `DEVDOCS_LANGS` e `LARAVEL_VERSION` nun `.env`.
 
-## Instalar
+## Usar sen DAW Dev
 
-En Linux, ou dentro da distribución de WSL, no directorio do paquete:
+En Linux, no directorio do paquete:
 
 ```bash
-./instalar.sh            # carga as imaxes se faltan e arranca os servizos
+./instalar.sh            # carga as imaxes que falten e arranca os servizos
 ./instalar.sh estado     # os contedores
 ./instalar.sh parar      # párase, sen borrar as imaxes
 ```
 
-O script comproba o SHA256 antes de cargar as imaxes e espera a que respondan
-os tres enderezos. Os contedores levan `restart: unless-stopped`, e volven
-arrancar cada vez que arranca Docker. Repetilo é seguro.
+O script comproba o SHA256 de cada arquivo antes de cargalo e espera a que
+respondan os tres enderezos. Os contedores levan `restart: unless-stopped`, e
+volven arrancar cada vez que arranca Docker. Repetilo é seguro. Desde a raíz do
+proxecto, `docker compose up -d` fai o mesmo coas imaxes xa construídas.
 
-## Nas aulas
+## Nas aulas, con DAW Dev
 
-A distribución de WSL e o seu Docker son de cada conta de Windows, e por iso a
-documentación se activa unha vez en cada conta, despois de activar DAW Dev:
+As aulas usan a infraestrutura de DAW Dev: o paquete que se copia por WinRM aos
+equipos, a Debian de WSL de cada conta e o seu Docker. Os tres arquivos
+engádense a ese paquete con `engadir-imaxe.ps1`, e `daw-start-doc` cárgaos a
+primeira vez en cada conta. O procedemento está na
+[guía de despregamento de DAW Dev](https://github.com/miguelfm/daw-dev/blob/main/docs/aula-windows11.md#documentación-sen-conexión-daw-doc).
 
-1. No equipo do docente, como administrador dos equipos, `wsl/aula/copiar-paquete.ps1`
-   copia o paquete por WinRM a `C:\DAW-Doc` de cada equipo, comproba o SHA256 e
-   crea no menú Inicio de todos os usuarios o acceso directo
-   *DAW Dev → DAW Doc - Activar documentación*:
+Na Debian de WSL, `instalar.sh` non basta: WSL pecha a distribución cando
+non queda ningún proceso aberto, e os contedores páranse con ela. DAW Dev
+mantena aberta mentres hai servizos en marcha.
 
-   ```powershell
-   .\wsl\aula\copiar-paquete.ps1 -ComputerName A34EQ01,A34EQ02 -Package C:\DAW-Doc-Paquete
-   ```
+## Licenzas
 
-2. Cada persoa abre o acceso directo, que executa `activar-dawdoc.ps1`: este
-   lanza `instalar.sh` en `Debian-DAW` como `ad`, sen administración nin
-   Internet.
+O código deste repositorio ten licenza MIT. As imaxes levan contido doutros
+proxectos, coas súas licenzas: o manual de PHP (CC BY 3.0), DevDocs (MPL 2.0) e
+os documentos de MDN que inclúe (CC BY-SA 2.5 ou posterior), e a documentación de Laravel
+(MIT).
 
 ## Estado
 
-- Comprobado o 24-11-2026 en Linux, con Docker 29: a construción, o paquete,
-  a instalación sen as imaxes, que as carga e arranca os tres servizos, a
-  repetición, que non carga nada, e un `SHA256SUMS` alterado, que detén a
-  instalación.
-- Os scripts de Windows só se analizaron con PowerShell 7. Faltan por probar
-  con Windows PowerShell 5.1, WinRM e WSL nun equipo da aula.
-- O `Dockerfile` de DevDocs de `daw-vm` non se constrúe co analizador actual de
+- Comprobado o 24-11-2026 en Linux, con Docker 29 e Compose 5.8:
+  - a construción e o paquete;
+  - a instalación sen as imaxes, que as carga e arranca os tres servizos `healthy`;
+  - a repetición, que non carga nada, e un resumo alterado, que detén a carga desa imaxe;
+  - `daw-start-doc` e `daw-stop` de DAW Dev en Linux.
+- Falta probar `daw-start-doc` nun equipo Windows da aula, coas imaxes do paquete.
+- O `Dockerfile` de DevDocs da MV non se constrúe co analizador actual de
   Docker, por un `python3 -c` de varias liñas; aquí ese código vai en
   `devdocs/desempaquetar.py`.

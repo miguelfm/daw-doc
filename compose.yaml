@@ -3,6 +3,7 @@
 # As imaxes constrúense unha vez con rede (scripts/empaquetar.sh) e
 # cárganse despois sen rede (scripts/instalar.sh). Con restart:
 # unless-stopped, os contedores volven arrancar cando arranca Docker.
+# daw-dev usa as mesmas imaxes e portos no seu perfil doc (daw-start-doc).
 name: daw-doc
 
 services:
@@ -17,11 +18,6 @@ services:
     ports:
       - "${PHP_MANUAL_PORT:-8080}:80"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
 
   # DevDocs coas linguaxes de DEVDOCS_LANGS
   devdocs:
@@ -34,11 +30,6 @@ services:
     ports:
       - "${DEVDOCS_PORT:-5042}:9292"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9292/"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
 
   # Documentación de Laravel, co buscador lunr.js
   laravel-docs:
@@ -51,8 +42,3 @@ services:
     ports:
       - "${LARAVEL_DOCS_PORT:-8088}:80"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
-      interval: 30s
-      timeout: 5s
-      retries: 3

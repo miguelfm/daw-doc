@@ -98,3 +98,6 @@ RUN printf 'server {\n\
 }\n' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 9292
+# Na imaxe e non no Compose: válea tamén para o perfil doc de daw-dev
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=10s --start-interval=1s \
+    CMD wget -q --spider http://127.0.0.1:9292/ || exit 1

@@ -6,9 +6,9 @@
 #   ./instalar.sh estado     amosa os contedores
 #   ./instalar.sh parar      para os contedores, sen borrar as imaxes
 #
-# As imaxes cárganse de daw-doc-imaxes.tar.gz despois de comprobar o seu
-# SHA256. Os contedores levan restart: unless-stopped, e volven arrancar
-# cada vez que arranca Docker.
+# Cada imaxe que falte cárgase do seu arquivo (daw-doc-php.tar.gz...),
+# despois de comprobar o SHA256. Os contedores levan restart:
+# unless-stopped, e volven arrancar cada vez que arranca Docker.
 set -euo pipefail
 
 AQUI="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -41,22 +41,19 @@ case "${1:-instalar}" in
         ;;
 esac
 
-faltan=()
 while read -r imaxe; do
-    docker image inspect "$imaxe" >/dev/null 2>&1 || faltan+=("$imaxe")
-done < <("${COMPOSE[@]}" config --images)
-
-if [ ${#faltan[@]} -gt 0 ]; then
-    [ -f daw-doc-imaxes.tar.gz ] || {
-        echo "Faltan ${faltan[*]} e non está daw-doc-imaxes.tar.gz." >&2
+    docker image inspect "$imaxe" </dev/null >/dev/null 2>&1 && continue
+    arquivo="$(basename "${imaxe%%:*}").tar.gz"
+    [ -f "$arquivo" ] || {
+        echo "Falta a imaxe $imaxe e non está $arquivo." >&2
         exit 1
     }
     if [ -f SHA256SUMS ]; then
-        sha256sum --quiet -c SHA256SUMS
+        grep " $arquivo\$" SHA256SUMS | sha256sum --quiet -c -
     fi
-    echo "Cargando as imaxes..."
-    docker load -q -i daw-doc-imaxes.tar.gz
-fi
+    echo "Cargando $imaxe..."
+    docker load -q -i "$arquivo" </dev/null
+done < <("${COMPOSE[@]}" config --images)
 
 "${COMPOSE[@]}" up -d --no-build
 
