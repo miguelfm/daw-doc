@@ -12,6 +12,7 @@
 #   SHA256SUMS               os resumos dos tres ficheiros anteriores
 #   compose.yaml             o do proxecto
 #   instalar.sh              o script que carga as imaxes e as arranca
+#   parar.sh                 o script que para os contedores
 set -euo pipefail
 
 RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -30,6 +31,6 @@ for servizo in php-manual devdocs laravel-docs; do
     arquivos+=("$arquivo")
 done
 (cd "$SAIDA" && sha256sum "${arquivos[@]}" > SHA256SUMS)
-cp compose.yaml scripts/instalar.sh "$SAIDA/"
-chmod +x "$SAIDA/instalar.sh"
+cp compose.yaml scripts/instalar.sh scripts/parar.sh "$SAIDA/"
+chmod +x "$SAIDA/instalar.sh" "$SAIDA/parar.sh"
 ls -l "$SAIDA"

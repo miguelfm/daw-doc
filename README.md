@@ -29,6 +29,7 @@ scripts/empaquetar.sh            # deixa o paquete en dist/
 | `SHA256SUMS` | Os resumos dos tres arquivos |
 | `compose.yaml` | O do proxecto |
 | `instalar.sh` | Carga as imaxes que falten e arranca os servizos |
+| `parar.sh` | Para os contedores da documentación |
 
 Cada arquivo leva unha soa imaxe, como os rexistra o paquete da aula de DAW Dev.
 Para cambiar o idioma do manual, as linguaxes de DevDocs ou a versión de
@@ -36,12 +37,12 @@ Laravel, `PHP_MANUAL_LANG`, `DEVDOCS_LANGS` e `LARAVEL_VERSION` nun `.env`.
 
 ## Usar sen DAW Dev
 
-En Linux, no directorio do paquete:
+En Linux, no directorio do paquete (ou na raíz do proxecto):
 
 ```bash
 ./instalar.sh            # carga as imaxes que falten e arranca os servizos
 ./instalar.sh estado     # os contedores
-./instalar.sh parar      # párase, sen borrar as imaxes
+./parar.sh               # para os contedores (ou ./instalar.sh parar)
 ```
 
 O script comproba o SHA256 de cada arquivo antes de cargalo e espera a que
