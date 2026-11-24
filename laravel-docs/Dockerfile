@@ -7,7 +7,7 @@
 #   3. Serve con nginx (imaxe final lixeira)
 # =============================================================
 
-ARG LARAVEL_VERSION=12.x
+ARG LARAVEL_VERSION=13.x
 
 # ==================================
 # STAGE 1: Construción

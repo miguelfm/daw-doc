@@ -35,8 +35,8 @@ services:
     build:
       context: ./laravel-docs
       args:
-        LARAVEL_VERSION: ${LARAVEL_VERSION:-12.x}
-    image: ${DAW_DOC_IMAGE:-ghcr.io/miguelfm/daw-doc}-laravel:${LARAVEL_VERSION:-12.x}
+        LARAVEL_VERSION: ${LARAVEL_VERSION:-13.x}
+    image: ${DAW_DOC_IMAGE:-ghcr.io/miguelfm/daw-doc}-laravel:${LARAVEL_VERSION:-13.x}
     ports:
       - "${LARAVEL_DOCS_PORT:-8088}:80"
     restart: unless-stopped

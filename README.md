@@ -8,7 +8,7 @@ e para as clases sen Internet.
 |---|---|---|
 | `php-manual` | <http://localhost:8080/> | Manual oficial de PHP en inglés, co buscador Pagefind |
 | `devdocs` | <http://localhost:5042/> | DevDocs con HTML e CSS |
-| `laravel-docs` | <http://localhost:8088/> | Documentación de Laravel 12.x, co buscador lunr.js |
+| `laravel-docs` | <http://localhost:8088/> | Documentación de Laravel 13.x, co buscador lunr.js |
 
 É autónomo: funciona só con Docker. [DAW Dev](https://github.com/miguelfm/daw-dev)
 usa as mesmas imaxes e portos no seu perfil `doc`, coa orde `daw-start-doc`. Os
