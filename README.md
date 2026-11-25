@@ -101,7 +101,9 @@ os documentos de MDN que inclúe (CC BY-SA 2.5 ou posterior), e a documentación
   - a repetición, que non carga nada, e un resumo alterado, que detén a carga desa imaxe;
   - `daw-start-doc` e `daw-stop` de DAW Dev en Linux, e `instalar.sh` no mesmo
     equipo, cos contedores de DAW Dev parados.
-- Falta probar `daw-start-doc` nun equipo Windows da aula, coas imaxes do paquete.
+- Comprobado en Windows 11 nunha distribución WSL de proba co modelo da aula.
+  `daw-start-doc` cargou os tres arquivos do paquete e os recursos de busca
+  responderon nos tres servizos. `daw-stop-doc` conservou o servidor web en marcha.
 - O `Dockerfile` de DevDocs da MV non se constrúe co analizador actual de
   Docker, por un `python3 -c` de varias liñas; aquí ese código vai en
   `devdocs/desempaquetar.py`.
