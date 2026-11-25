@@ -13,7 +13,7 @@ ARG PHP_MANUAL_LANG=en
 # ==================================
 # STAGE 1: Descarga e indexación
 # ==================================
-FROM node:22-alpine AS builder
+FROM node:26-alpine AS builder
 
 ARG PHP_MANUAL_LANG
 

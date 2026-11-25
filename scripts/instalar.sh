@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Instala e arranca a documentación sen conexión, sen rede.
 #
-# Uso, no directorio do paquete (ou na raíz do proxecto):
+# Uso no paquete (na copia Git, executa scripts/instalar.sh):
 #   ./instalar.sh            carga as imaxes que falten e arranca os servizos
 #   ./instalar.sh estado     amosa os contedores
 #   ./instalar.sh parar      para os contedores, sen borrar as imaxes
@@ -12,6 +12,9 @@
 set -euo pipefail
 
 AQUI="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ ${AQUI##*/} == scripts && ! -f "$AQUI/compose.yaml" ]]; then
+    AQUI="$(cd "$AQUI/.." && pwd)"
+fi
 cd "$AQUI"
 COMPOSE=(docker compose -f "$AQUI/compose.yaml")
 
@@ -55,9 +58,9 @@ while read -r imaxe; do
     docker load -q -i "$arquivo" </dev/null
 done < <("${COMPOSE[@]}" config --images)
 
-"${COMPOSE[@]}" up -d --no-build
+"${COMPOSE[@]}" up -d --no-build --pull never --wait --wait-timeout 90
 
-# Os servizos tardan uns segundos en responder
+# Comproba os enderezos publicados unha vez que os contedores están listos.
 porto() { "${COMPOSE[@]}" port "$1" "$2" | sed 's/.*://'; }
 declare -A URL=(
     [php-manual]="http://localhost:$(porto php-manual 80)/"
@@ -66,11 +69,7 @@ declare -A URL=(
 )
 fallos=0
 for servizo in php-manual devdocs laravel-docs; do
-    for _ in $(seq 30); do
-        curl -s -o /dev/null "${URL[$servizo]}" && break
-        sleep 1
-    done
-    if curl -s -o /dev/null "${URL[$servizo]}"; then
+    if curl -fsS --max-time 8 -o /dev/null "${URL[$servizo]}"; then
         echo "OK     $servizo en ${URL[$servizo]}"
     else
         echo "FALLA  $servizo non responde en ${URL[$servizo]}" >&2

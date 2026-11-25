@@ -19,7 +19,8 @@ RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SAIDA="${1:-$RAIZ/dist}"
 cd "$RAIZ"
 
-docker compose build
+# Os Dockerfiles descargan documentación que se actualiza fóra deste repositorio.
+docker compose build --pull --no-cache
 mkdir -p "$SAIDA"
 arquivos=()
 for servizo in php-manual devdocs laravel-docs; do

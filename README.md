@@ -16,16 +16,22 @@ usa as mesmas imaxes e portos no seu perfil `doc`, coa orde `daw-start-doc`. Os
 
 ## Construír as imaxes
 
-As imaxes constrúense unha vez, nun equipo con Internet, e gárdanse para
-instalalas despois sen rede:
+Constrúe as imaxes nun equipo con Internet e gárdaas para instalalas despois
+sen rede. Para actualizar un paquete existente, actualiza o repositorio e
+volve executar o mesmo comando:
 
 ```bash
 scripts/empaquetar.sh            # deixa o paquete en dist/
 ```
 
+O script descarga as imaxes base actuais e volve obter o manual de PHP,
+os datos de DevDocs e a documentación de Laravel 13.x. A construción usa
+Node.js 26 para Pagefind, Alpine 3.24 para descargar DevDocs e Python 3.15
+para xerar o sitio de Laravel con MkDocs e Material.
+
 | Ficheiro | Contido |
 |---|---|
-| `daw-doc-php.tar.gz`, `daw-doc-devdocs.tar.gz`, `daw-doc-laravel.tar.gz` | Cada imaxe, gardada con `docker save` (uns 115 MB entre as tres) |
+| `daw-doc-php.tar.gz`, `daw-doc-devdocs.tar.gz`, `daw-doc-laravel.tar.gz` | Cada imaxe, gardada con `docker save` (arredor de 125 MB entre as tres) |
 | `SHA256SUMS` | Os resumos dos tres arquivos |
 | `compose.yaml` | O do proxecto |
 | `instalar.sh` | Carga as imaxes que falten e arranca os servizos |
@@ -37,7 +43,7 @@ Laravel, `PHP_MANUAL_LANG`, `DEVDOCS_LANGS` e `LARAVEL_VERSION` nun `.env`.
 
 ## Usar sen DAW Dev
 
-En Linux, no directorio do paquete (ou na raíz do proxecto):
+En Linux, no directorio do paquete, executa:
 
 ```bash
 ./instalar.sh            # carga as imaxes que falten e arranca os servizos
@@ -47,8 +53,20 @@ En Linux, no directorio do paquete (ou na raíz do proxecto):
 
 O script comproba o SHA256 de cada arquivo antes de cargalo e espera a que
 respondan os tres enderezos. Os contedores levan `restart: unless-stopped`, e
-volven arrancar cada vez que arranca Docker. Repetilo é seguro. Desde a raíz do
-proxecto, `docker compose up -d` fai o mesmo coas imaxes xa construídas.
+volven arrancar cada vez que arranca Docker. Para instalar un paquete novo
+nun Docker que xa ten etiquetas anteriores, comproba `sha256sum -c SHA256SUMS`
+e carga os tres arquivos con `docker load -i <arquivo>` antes de executar
+`./instalar.sh`.
+
+Desde unha copia Git, constrúe primeiro as imaxes e usa os scripts da carpeta
+`scripts/`:
+
+```bash
+docker compose build --pull --no-cache
+bash scripts/instalar.sh
+bash scripts/instalar.sh estado
+bash scripts/parar.sh
+```
 
 ## Nas aulas, con DAW Dev
 
@@ -62,9 +80,11 @@ Na Debian de WSL, `instalar.sh` non basta: WSL pecha a distribución cando
 non queda ningún proceso aberto, e os contedores páranse con ela. DAW Dev
 mantena aberta mentres hai servizos en marcha.
 
-Nun equipo con DAW Dev, `daw-start-doc` substitúe a `instalar.sh`. Os dous usan
-os mesmos portos: antes de `daw-start-doc`, `./instalar.sh parar`, e antes de
-`instalar.sh`, `daw-stop`.
+Nun equipo con DAW Dev, usa `daw-start-doc` e `daw-stop-doc`. Nunha instalación
+manual, constrúe ou carga as imaxes no mesmo Docker de Debian que usa DAW Dev.
+Se preparas un paquete para a aula, distribúe os tres arquivos e o manifesto
+actualizado. Para cambiar entre o paquete autónomo e DAW Dev, detén primeiro
+os servizos de documentación que están en marcha, pois comparten os portos.
 
 ## Licenzas
 

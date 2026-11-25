@@ -12,7 +12,7 @@ ARG LARAVEL_VERSION=13.x
 # ==================================
 # STAGE 1: Construción
 # ==================================
-FROM python:3.12-slim AS builder
+FROM python:3.15-slim AS builder
 
 ARG LARAVEL_VERSION
 

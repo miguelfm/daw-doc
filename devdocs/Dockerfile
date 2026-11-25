@@ -10,7 +10,7 @@ ARG DEVDOCS_LANGS="html css"
 # ==================================
 # STAGE 1: Descargar todo con wget
 # ==================================
-FROM alpine:3.21 AS downloader
+FROM alpine:3.24 AS downloader
 
 ARG DEVDOCS_LANGS
 
