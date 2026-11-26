@@ -34,7 +34,7 @@ RUN cat > /site/search.html << 'SEARCHPAGE'
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHP Manual - Buscar</title>
+    <title>PHP Manual - Search</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -87,14 +87,14 @@ RUN cat > /site/search.html << 'SEARCHPAGE'
 </head>
 <body>
     <div class="header">
-        <h1>PHP Manual - Busca</h1>
-        <a href="/index.html">← Volver ao índice</a>
+        <h1>PHP Manual - Search</h1>
+        <a href="/index.html">← Back to the index</a>
     </div>
     <div class="search-container">
         <div id="search"></div>
         <div class="tip">
-            Podes buscar funcións (p.ex. <code>array_map</code>), conceptos (<code>closures</code>),
-            ou calquera termo da documentación de PHP.
+            Search for functions (e.g. <code>array_map</code>), concepts (<code>closures</code>)
+            or any other term in the PHP documentation.
         </div>
     </div>
     <script src="/pagefind/pagefind-ui.js"></script>
@@ -104,11 +104,9 @@ RUN cat > /site/search.html << 'SEARCHPAGE'
             showSubResults: true,
             showImages: false,
             autofocus: true,
+            // As demais mensaxes son as de Pagefind en inglés, a lingua da páxina.
             translations: {
-                placeholder: "Buscar na documentación de PHP...",
-                zero_results: "Non se atoparon resultados para «[SEARCH_TERM]»",
-                many_results: "[COUNT] resultados",
-                one_result: "1 resultado",
+                placeholder: "Search the PHP manual...",
             }
         });
     </script>
@@ -159,7 +157,7 @@ server {
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
-                Buscar
+                Search
             </a>
         </div>
     </body>';
@@ -189,4 +187,4 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=10s --start-i
     CMD wget -q --spider http://127.0.0.1/ || exit 1
 
 LABEL maintainer="DAW Docencia"
-LABEL description="Manual de PHP offline con buscador Pagefind"
+LABEL description="Offline PHP manual with Pagefind search"

@@ -12,7 +12,7 @@ DOCS_DIR = "/docs"
 OUTPUT_FILE = "/mkdocs.yml"
 
 NAVIGATION = {
-    "Primeiros Pasos": [
+    "Getting Started": [
         "installation",
         "configuration",
         "directory-structure",
@@ -20,13 +20,13 @@ NAVIGATION = {
         "starter-kits",
         "deployment",
     ],
-    "Arquitectura": [
+    "Architecture Concepts": [
         "lifecycle",
         "container",
         "providers",
         "facades",
     ],
-    "Fundamentos": [
+    "The Basics": [
         "routing",
         "middleware",
         "csrf",
@@ -41,7 +41,7 @@ NAVIGATION = {
         "errors",
         "logging",
     ],
-    "Base de Datos": [
+    "Database": [
         "database",
         "queries",
         "pagination",
@@ -57,7 +57,7 @@ NAVIGATION = {
         "eloquent-serialization",
         "eloquent-factories",
     ],
-    "Seguridade": [
+    "Security": [
         "authentication",
         "authorization",
         "verification",
@@ -74,7 +74,7 @@ NAVIGATION = {
         "database-testing",
         "mocking",
     ],
-    "Paquetes e API": [
+    "Digging Deeper": [
         "packages",
         "collections",
         "helpers",
@@ -87,7 +87,7 @@ NAVIGATION = {
         "notifications",
         "queues",
     ],
-    "Ferramentas": [
+    "Tools": [
         "artisan",
         "broadcasting",
         "envoy",
@@ -144,7 +144,7 @@ def get_available_docs():
 
 
 def build_nav(available_docs):
-    nav = [{"Inicio": "index.md"}]
+    nav = [{"Home": "index.md"}]
     used_slugs = {"index"}
     for category, slugs in NAVIGATION.items():
         items = []
@@ -160,14 +160,14 @@ def build_nav(available_docs):
         if slug not in used_slugs:
             others.append({doc["title"]: doc["file"]})
     if others:
-        nav.append({"Outros": others})
+        nav.append({"Other": others})
     return nav
 
 
 def generate_mkdocs_yml(nav):
     config = {
         "site_name": "Laravel Documentation",
-        "site_description": "Documentación offline de Laravel para DAW",
+        "site_description": "Offline Laravel documentation for DAW",
         "site_url": "",
         "use_directory_urls": False,
         "theme": {
@@ -180,7 +180,7 @@ def generate_mkdocs_yml(nav):
                     "accent": "red",
                     "toggle": {
                         "icon": "material/brightness-7",
-                        "name": "Cambiar a modo escuro",
+                        "name": "Switch to dark mode",
                     },
                 },
                 {
@@ -189,7 +189,7 @@ def generate_mkdocs_yml(nav):
                     "accent": "red",
                     "toggle": {
                         "icon": "material/brightness-4",
-                        "name": "Cambiar a modo claro",
+                        "name": "Switch to light mode",
                     },
                 },
             ],
@@ -278,27 +278,27 @@ def create_index_page():
         return
     content = """# Laravel Documentation
 
-Benvido/a á documentación offline de Laravel para DAW.
+Welcome to the offline Laravel documentation for DAW.
 
-Usa o **buscador** (icona da lupa arriba) para atopar calquera tema rapidamente.
+Use the **search** (the magnifying glass at the top) to find any topic quickly.
 
-## Primeiros Pasos
+## Getting Started
 
-- [Instalación](installation.md)
-- [Configuración](configuration.md)
-- [Estrutura de directorios](directory-structure.md)
+- [Installation](installation.md)
+- [Configuration](configuration.md)
+- [Directory Structure](directory-structure.md)
 - [Starter Kits](starter-kits.md)
 
-## Temas principais
+## Main Topics
 
 - [Routing](routing.md)
 - [Controllers](controllers.md)
 - [Middleware](middleware.md)
 - [Blade Templates](blade.md)
 - [Eloquent ORM](eloquent.md)
-- [Validación](validation.md)
-- [Autenticación](authentication.md)
-- [Migracións](migrations.md)
+- [Validation](validation.md)
+- [Authentication](authentication.md)
+- [Migrations](migrations.md)
 """
     with open(index_path, "w", encoding="utf-8") as f:
         f.write(content)
