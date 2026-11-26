@@ -7,7 +7,7 @@ e para as clases sen Internet.
 | Servizo | Enderezo | Contido |
 |---|---|---|
 | `php-manual` | <http://localhost:8080/> | Manual oficial de PHP en inglés, co buscador Pagefind |
-| `devdocs` | <http://localhost:5042/> | DevDocs con HTML e CSS |
+| `devdocs` | <http://localhost:5042/> | Referencia de HTML, HTTP e CSS de MDN Web Docs, en inglés, cos datos de DevDocs e o buscador Pagefind |
 | `laravel-docs` | <http://localhost:8088/> | Documentación de Laravel 13.x, co buscador lunr.js |
 
 É autónomo: funciona só con Docker. [DAW Dev](https://github.com/miguelfm/daw-dev)
@@ -26,8 +26,8 @@ scripts/empaquetar.sh            # deixa o paquete en dist/
 
 O script descarga as imaxes base actuais e volve obter o manual de PHP,
 os datos de DevDocs e a documentación de Laravel 13.x. A construción usa
-Node.js 26 para Pagefind, Alpine 3.24 para descargar DevDocs e Python 3.15
-para xerar o sitio de Laravel con MkDocs e Material.
+Node.js 26 para Pagefind (e Python para xerar as páxinas de DevDocs) e Python
+3.15 para xerar o sitio de Laravel con MkDocs e Material.
 
 | Ficheiro | Contido |
 |---|---|
@@ -38,8 +38,21 @@ para xerar o sitio de Laravel con MkDocs e Material.
 | `parar.sh` | Para os contedores da documentación |
 
 Cada arquivo leva unha soa imaxe, como os rexistra o paquete da aula de DAW Dev.
-Para cambiar o idioma do manual, as linguaxes de DevDocs ou a versión de
+Para cambiar o idioma do manual, as documentacións de DevDocs ou a versión de
 Laravel, `PHP_MANUAL_LANG`, `DEVDOCS_LANGS` e `LARAVEL_VERSION` nun `.env`.
+
+## Referencia web (`devdocs`)
+
+Non é a aplicación de DevDocs: esta só funciona servida desde devdocs.io e, fóra
+del, avisa de que está noutro sitio e descarga os documentos de Internet.
+`devdocs/build-site.py` descarga de `documents.devdocs.io` o índice e as páxinas
+de cada documentación de `DEVDOCS_LANGS` (por defecto `html http css`), o contido de
+MDN Web Docs en inglés que prepara DevDocs, e garda cada páxina como HTML estático.
+Cada documentación ten unha portada coas súas entradas por tipo, e a portada do
+sitio, a busca de Pagefind en todas elas. Non se carga nada de Internet.
+
+Para engadir outra, engade o seu *slug* de <https://devdocs.io/docs/docs.json>
+(por exemplo, `javascript` ou `dom`) a `DEVDOCS_LANGS` e volve construír.
 
 ## Usar sen DAW Dev
 
@@ -89,8 +102,8 @@ os servizos de documentación que están en marcha, pois comparten os portos.
 ## Licenzas
 
 O código deste repositorio ten licenza MIT. As imaxes levan contido doutros
-proxectos, coas súas licenzas: o manual de PHP (CC BY 3.0), DevDocs (MPL 2.0) e
-os documentos de MDN que inclúe (CC BY-SA 2.5 ou posterior), e a documentación de Laravel
+proxectos, coas súas licenzas: o manual de PHP (CC BY 3.0), os documentos de MDN
+Web Docs preparados por DevDocs (CC BY-SA 2.5 ou posterior), e a documentación de Laravel
 (MIT).
 
 ## Estado
@@ -104,6 +117,10 @@ os documentos de MDN que inclúe (CC BY-SA 2.5 ou posterior), e a documentación
 - Comprobado en Windows 11 nunha distribución WSL de proba co modelo da aula.
   `daw-start-doc` cargou os tres arquivos do paquete e os recursos de busca
   responderon nos tres servizos. `daw-stop-doc` conservou o servidor web en marcha.
-- O `Dockerfile` de DevDocs da MV non se constrúe co analizador actual de
-  Docker, por un `python3 -c` de varias liñas; aquí ese código vai en
-  `devdocs/desempaquetar.py`.
+- Desde o 26-11-2026, `devdocs` é un sitio estático (véxase *Referencia web*). A
+  copia anterior da aplicación de devdocs.io descargaba os documentos de
+  Internet e avisaba de que non estaba en devdocs.io. Comprobado en Linux con
+  HTML, HTTP e CSS (1659 páxinas): resolven todas as ligazóns internas salvo seis
+  da páxina `grid` a alias antigos que DevDocs non inclúe (`grid-column-gap` e
+  `grid-row-gap`), ningunha páxina carga recursos externos e a busca atopa as
+  páxinas esperadas cun navegador sen acceso a Internet.

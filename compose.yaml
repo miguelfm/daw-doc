@@ -1,4 +1,4 @@
-# Documentación sen conexión para DAW: manual de PHP, DevDocs e Laravel.
+# Documentación sen conexión para DAW: manual de PHP, referencia de MDN (HTML, HTTP e CSS) e Laravel.
 # Os valores ${...} teñen valor por defecto; pódense cambiar nun .env.
 # As imaxes constrúense unha vez con rede (scripts/empaquetar.sh) e
 # cárganse despois sen rede (scripts/instalar.sh). Con restart:
@@ -19,12 +19,12 @@ services:
       - "${PHP_MANUAL_PORT:-8080}:80"
     restart: unless-stopped
 
-  # DevDocs coas linguaxes de DEVDOCS_LANGS
+  # Referencia de MDN (HTML, HTTP e CSS por defecto) cos datos de DevDocs, sen a súa aplicación
   devdocs:
     build:
       context: ./devdocs
       args:
-        DEVDOCS_LANGS: ${DEVDOCS_LANGS:-html css}
+        DEVDOCS_LANGS: ${DEVDOCS_LANGS:-html http css}
     image: ${DAW_DOC_IMAGE:-ghcr.io/miguelfm/daw-doc}-devdocs:latest
     ports:
       - "${DEVDOCS_PORT:-5042}:9292"
