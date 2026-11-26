@@ -41,6 +41,22 @@ Cada arquivo leva unha soa imaxe, como os rexistra o paquete da aula de DAW Dev.
 Para cambiar o idioma do manual, as documentacións de DevDocs ou a versión de
 Laravel, `PHP_MANUAL_LANG`, `DEVDOCS_LANGS` e `LARAVEL_VERSION` nun `.env`.
 
+## Publicar os arquivos
+
+Os arquivos de `dist/` publícanse como unha release de GitHub, para descargalos sen login.
+DAW Dev rexístraos no paquete da aula con `windows\classroom\add-doc-images.ps1`, que
+descarga a última release e comproba `SHA256SUMS`. Despois de `scripts/empaquetar.sh` e
+de facer commit dos cambios:
+
+```bash
+(cd dist && sha256sum -c SHA256SUMS)
+gh release create docs-$(date +%F) dist/*.tar.gz dist/SHA256SUMS --target "$(git rev-parse HEAD)" \
+    --title "Documentación sen conexión $(date +%F)" --notes "Construída desde $(git rev-parse --short HEAD)."
+```
+
+Cada arquivo debe ocupar menos de 2 GiB. As releases antigas pódense borrar con
+`gh release delete <tag> --cleanup-tag`.
+
 ## Referencia web (`devdocs`)
 
 Non é a aplicación de DevDocs: esta só funciona servida desde devdocs.io e, fóra
