@@ -173,6 +173,8 @@ def generate_mkdocs_yml(nav):
         "theme": {
             "name": "material",
             "language": "en",
+            # Sen Google Fonts: sen conexión, a folla de estilos externa bloquearía a páxina.
+            "font": False,
             "palette": [
                 {
                     "scheme": "default",
