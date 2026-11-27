@@ -6,12 +6,16 @@ e para as clases sen Internet.
 
 | Servizo | Enderezo | Contido |
 |---|---|---|
-| `php-manual` | <http://localhost:8080/> | Manual oficial de PHP en inglés, co buscador Pagefind |
-| `devdocs` | <http://localhost:5042/> | Referencia de HTML, HTTP e CSS de MDN Web Docs, en inglés, cos datos de DevDocs e o buscador Pagefind |
-| `laravel-docs` | <http://localhost:8088/> | Documentación de Laravel 13.x, co buscador lunr.js |
+| `doc-php` | <http://localhost:8080/> | Manual oficial de PHP en inglés, co buscador Pagefind |
+| `doc-web` | <http://localhost:5042/> | Referencia web: HTML, HTTP e CSS de MDN Web Docs, en inglés, cos datos de DevDocs e o buscador Pagefind |
+| `doc-laravel` | <http://localhost:8088/> | Documentación de Laravel 13.x, co buscador lunr.js |
 
 É autónomo: funciona só con Docker. [DAW Dev](https://github.com/miguelfm/daw-dev)
-usa as mesmas imaxes e portos no seu perfil `doc`, coa orde `daw-start-doc`. Os
+usa as mesmas imaxes, servizos e portos no seu perfil `doc`, coa orde `daw-start-doc`.
+Os servizos levan o nome do seu papel (`doc-php`, `doc-web`, `doc-laravel`), que é tamén o
+hostname; ata o 27-11-2026 eran `php-manual`, `devdocs` e `laravel-docs`, e `instalar.sh` retira
+os seus contedores. As variables `DOC_PHP_PORT`, `DOC_WEB_PORT` e `DOC_LARAVEL_PORT` substitúen a
+`PHP_MANUAL_PORT`, `DEVDOCS_PORT` e `LARAVEL_DOCS_PORT`, que seguen funcionando. Os
 `Dockerfile` veñen da documentación sen conexión da MV da aula.
 
 ## Construír as imaxes
@@ -57,7 +61,7 @@ gh release create docs-$(date +%F) dist/*.tar.gz dist/SHA256SUMS --target "$(git
 Cada arquivo debe ocupar menos de 2 GiB. As releases antigas pódense borrar con
 `gh release delete <tag> --cleanup-tag`.
 
-## Referencia web (`devdocs`)
+## Referencia web (`doc-web`)
 
 Non é a aplicación de DevDocs: esta só funciona servida desde devdocs.io e, fóra
 del, avisa de que está noutro sitio e descarga os documentos de Internet.
@@ -133,7 +137,7 @@ Web Docs preparados por DevDocs (CC BY-SA 2.5 ou posterior), e a documentación 
 - Comprobado en Windows 11 nunha distribución WSL de proba co modelo da aula.
   `daw-start-doc` cargou os tres arquivos do paquete e os recursos de busca
   responderon nos tres servizos. `daw-stop-doc` conservou o servidor web en marcha.
-- Desde o 26-11-2026, `devdocs` é un sitio estático (véxase *Referencia web*). A
+- Desde o 26-11-2026, a referencia web é un sitio estático (véxase *Referencia web*). A
   copia anterior da aplicación de devdocs.io descargaba os documentos de
   Internet e avisaba de que non estaba en devdocs.io. Comprobado en Linux con
   HTML, HTTP e CSS (1659 páxinas): resolven todas as ligazóns internas salvo seis

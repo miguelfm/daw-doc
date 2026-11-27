@@ -58,17 +58,19 @@ while read -r imaxe; do
     docker load -q -i "$arquivo" </dev/null
 done < <("${COMPOSE[@]}" config --images)
 
-"${COMPOSE[@]}" up -d --no-build --pull never --wait --wait-timeout 90
+# --remove-orphans: os contedores dos servizos anteriores ao 27-11-2026 (php-manual, devdocs e
+# laravel-docs) volverían arrancar con Docker e ocuparían os portos. Este proxecto non ten perfís.
+"${COMPOSE[@]}" up -d --no-build --pull never --remove-orphans --wait --wait-timeout 90
 
 # Comproba os enderezos publicados unha vez que os contedores están listos.
 porto() { "${COMPOSE[@]}" port "$1" "$2" | sed 's/.*://'; }
 declare -A URL=(
-    [php-manual]="http://localhost:$(porto php-manual 80)/"
-    [devdocs]="http://localhost:$(porto devdocs 9292)/"
-    [laravel-docs]="http://localhost:$(porto laravel-docs 80)/"
+    [doc-php]="http://localhost:$(porto doc-php 80)/"
+    [doc-web]="http://localhost:$(porto doc-web 9292)/"
+    [doc-laravel]="http://localhost:$(porto doc-laravel 80)/"
 )
 fallos=0
-for servizo in php-manual devdocs laravel-docs; do
+for servizo in doc-php doc-web doc-laravel; do
     if curl -fsS --max-time 8 -o /dev/null "${URL[$servizo]}"; then
         echo "OK     $servizo en ${URL[$servizo]}"
     else

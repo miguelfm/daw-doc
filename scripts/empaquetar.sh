@@ -23,7 +23,7 @@ cd "$RAIZ"
 docker compose build --pull --no-cache
 mkdir -p "$SAIDA"
 arquivos=()
-for servizo in php-manual devdocs laravel-docs; do
+for servizo in doc-php doc-web doc-laravel; do
     imaxe=$(docker compose config --images "$servizo")
     # daw-doc-php, daw-doc-devdocs, daw-doc-laravel
     arquivo="$(basename "${imaxe%%:*}").tar.gz"

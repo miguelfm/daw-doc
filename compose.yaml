@@ -3,40 +3,47 @@
 # As imaxes constrúense unha vez con rede (scripts/empaquetar.sh) e
 # cárganse despois sen rede (scripts/instalar.sh). Con restart:
 # unless-stopped, os contedores volven arrancar cando arranca Docker.
-# daw-dev usa as mesmas imaxes e portos no seu perfil doc (daw-start-doc), cos
-# nomes daw-doc-*; aquí os contedores levan os nomes por defecto de Compose.
+# daw-dev usa as mesmas imaxes, servizos e portos no seu perfil doc (daw-start-doc), cos
+# contedores doc-php-c, doc-web-c e doc-laravel-c; aquí levan os nomes por defecto de Compose.
+# Os servizos levan o nome do seu papel, que é tamén o hostname. Ata o 27-11-2026 eran
+# php-manual, devdocs e laravel-docs; os directorios de construción conservan eses nomes.
 name: daw-doc
 
 services:
   # Manual oficial de PHP, co buscador Pagefind, servido con nginx
-  php-manual:
+  doc-php:
+    hostname: doc-php
     build:
       context: ./php-manual
       args:
         PHP_MANUAL_LANG: ${PHP_MANUAL_LANG:-en}
     image: ${DAW_DOC_IMAGE:-ghcr.io/miguelfm/daw-doc}-php:${PHP_MANUAL_LANG:-en}
     ports:
-      - "${PHP_MANUAL_PORT:-8080}:80"
+      # PHP_MANUAL_PORT, DEVDOCS_PORT e LARAVEL_DOCS_PORT son os nomes anteriores das variables.
+      - "${DOC_PHP_PORT:-${PHP_MANUAL_PORT:-8080}}:80"
     restart: unless-stopped
 
-  # Referencia de MDN (HTML, HTTP e CSS por defecto) cos datos de DevDocs, sen a súa aplicación
-  devdocs:
+  # Referencia web: agora MDN (HTML, HTTP e CSS por defecto) cos datos de DevDocs, sen a súa
+  # aplicación. O nome do servizo non depende da fonte.
+  doc-web:
+    hostname: doc-web
     build:
       context: ./devdocs
       args:
         DEVDOCS_LANGS: ${DEVDOCS_LANGS:-html http css}
     image: ${DAW_DOC_IMAGE:-ghcr.io/miguelfm/daw-doc}-devdocs:latest
     ports:
-      - "${DEVDOCS_PORT:-5042}:9292"
+      - "${DOC_WEB_PORT:-${DEVDOCS_PORT:-5042}}:9292"
     restart: unless-stopped
 
   # Documentación de Laravel, co buscador lunr.js
-  laravel-docs:
+  doc-laravel:
+    hostname: doc-laravel
     build:
       context: ./laravel-docs
       args:
         LARAVEL_VERSION: ${LARAVEL_VERSION:-13.x}
     image: ${DAW_DOC_IMAGE:-ghcr.io/miguelfm/daw-doc}-laravel:${LARAVEL_VERSION:-13.x}
     ports:
-      - "${LARAVEL_DOCS_PORT:-8088}:80"
+      - "${DOC_LARAVEL_PORT:-${LARAVEL_DOCS_PORT:-8088}}:80"
     restart: unless-stopped

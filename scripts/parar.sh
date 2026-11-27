@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Para os contedores da documentación sen conexión (php-manual, devdocs, laravel-docs).
+# Para os contedores da documentación sen conexión (doc-php, doc-web e doc-laravel).
 #
 # Uso no paquete (na copia Git, executa scripts/parar.sh):
 #   ./parar.sh
