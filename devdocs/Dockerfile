@@ -30,7 +30,7 @@ RUN pagefind --site /site
 # ==================================
 # STAGE 2: Servizo con nginx (sen EXPOSE 80 herdado de nginx:alpine)
 # ==================================
-FROM alpine:3.23
+FROM alpine:3.24
 
 RUN apk add --no-cache nginx \
     && ln -sf /dev/stdout /var/log/nginx/access.log \
