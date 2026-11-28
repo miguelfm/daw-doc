@@ -1,0 +1,112 @@
+name: CI e publicación
+
+on:
+  push:
+    branches: [main]
+    tags: ["docs-*"]
+  pull_request:
+  schedule:
+    # O día 1 de cada mes: reconstrúe a documentación coas actualizacións recentes
+    - cron: "0 4 1 * *"
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Publicar tamén os arquivos .tar.gz e SHA256SUMS como release de GitHub"
+        type: boolean
+        default: false
+      release_tag:
+        description: "Etiqueta da release (baleiro = docs-AAAA-MM-DD)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  construir-e-publicar:
+    name: Construír, comprobar e publicar
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Lint de scripts e sintaxe Python
+        run: |
+          shellcheck -S warning scripts/*.sh
+          python3 -m py_compile devdocs/build-site.py laravel-docs/build-nav.py
+
+      - name: Construír imaxes
+        env:
+          DAW_DOC_IMAGE: ghcr.io/${{ github.repository_owner }}/daw-doc
+        run: docker compose build --pull
+
+      - name: Arrancar e verificar os tres servizos
+        env:
+          DAW_DOC_IMAGE: ghcr.io/${{ github.repository_owner }}/daw-doc
+        run: |
+          docker compose up -d --wait --wait-timeout 90
+          bash scripts/verificar.sh
+
+      - name: Logs se algo falla
+        if: failure()
+        run: docker compose logs --tail 100
+
+      - name: Parar contedores de proba
+        if: always()
+        run: docker compose down
+
+      - name: Iniciar sesión en GHCR
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/docs-'))
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publicar imaxes en GHCR
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/docs-'))
+        env:
+          DAW_DOC_IMAGE: ghcr.io/${{ github.repository_owner }}/daw-doc
+        run: |
+          for svc in doc-php doc-web doc-laravel; do
+            img=$(docker compose config --images "$svc")
+            echo "Publicando $img..."
+            docker push "$img"
+          done
+
+      - name: Empaquetar e publicar release sen conexión (.tar.gz + SHA256SUMS)
+        if: >-
+          github.event_name != 'pull_request' &&
+          (startsWith(github.ref, 'refs/tags/docs-') ||
+           (github.event_name == 'workflow_dispatch' && inputs.publish_release == true))
+        env:
+          DAW_DOC_IMAGE: ghcr.io/${{ github.repository_owner }}/daw-doc
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p dist
+          arquivos=()
+          for svc in doc-php doc-web doc-laravel; do
+            img=$(docker compose config --images "$svc")
+            arquivo="$(basename "${img%%:*}").tar.gz"
+            echo "Gardando $img en dist/$arquivo..."
+            docker save "$img" | gzip -6 > "dist/$arquivo"
+            arquivos+=("$arquivo")
+          done
+          (cd dist && sha256sum "${arquivos[@]}" > SHA256SUMS && sha256sum -c SHA256SUMS)
+          if [[ "${GITHUB_REF}" == refs/tags/docs-* ]]; then
+            tag="${GITHUB_REF_NAME}"
+          elif [[ -n "${{ inputs.release_tag }}" ]]; then
+            tag="${{ inputs.release_tag }}"
+          else
+            tag="docs-$(date -u +%F)"
+          fi
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/*.tar.gz dist/SHA256SUMS --clobber
+          else
+            gh release create "$tag" dist/*.tar.gz dist/SHA256SUMS \
+              --target "$GITHUB_SHA" \
+              --title "Documentación sen conexión ${tag#docs-}" \
+              --notes "Construída automaticamente desde ${GITHUB_SHA::7}."
+          fi

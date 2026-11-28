@@ -28,14 +28,19 @@ RUN SITE_DIR=/site python3 /build-site.py ${DEVDOCS_LANGS}
 RUN pagefind --site /site
 
 # ==================================
-# STAGE 2: Servizo con nginx
+# STAGE 2: Servizo con nginx (sen EXPOSE 80 herdado de nginx:alpine)
 # ==================================
-FROM nginx:alpine
+FROM alpine:3.23
+
+RUN apk add --no-cache nginx \
+    && ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log \
+    && mkdir -p /usr/share/nginx/html /run/nginx
 
 COPY --from=builder /site /usr/share/nginx/html
 
 # As ligazóns das páxinas van sen .html, como en DevDocs.
-RUN cat > /etc/nginx/conf.d/default.conf << 'NGINX'
+RUN cat > /etc/nginx/http.d/default.conf << 'NGINX'
 server {
     listen 9292;
     server_name _;
@@ -57,5 +62,7 @@ EXPOSE 9292
 # Na imaxe e non no Compose: válea tamén para o perfil doc de daw-dev
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=10s --start-interval=1s \
     CMD wget -q --spider http://127.0.0.1:9292/ || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]
 
 LABEL description="Offline web reference (MDN Web Docs via DevDocs) with Pagefind search"

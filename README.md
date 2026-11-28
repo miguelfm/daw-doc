@@ -45,12 +45,19 @@ Cada arquivo leva unha soa imaxe, como os rexistra o paquete da aula de DAW Dev.
 Para cambiar o idioma do manual, as documentacións de DevDocs ou a versión de
 Laravel, `PHP_MANUAL_LANG`, `DEVDOCS_LANGS` e `LARAVEL_VERSION` nun `.env`.
 
-## Publicar os arquivos
+## Publicar en GHCR e releases
 
-Os arquivos de `dist/` publícanse como unha release de GitHub, para descargalos sen login.
-DAW Dev rexístraos no paquete da aula con `windows\classroom\add-doc-images.ps1`, que
-descarga a última release e comproba `SHA256SUMS`. Despois de `scripts/empaquetar.sh` e
-de facer commit dos cambios:
+GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) constrúe as tres imaxes,
+compróbaas con `scripts/verificar.sh` e publícaas en GHCR (`ghcr.io/miguelfm/daw-doc-php:en`,
+`ghcr.io/miguelfm/daw-doc-devdocs:latest` e `ghcr.io/miguelfm/daw-doc-laravel:13.x`) en cada cambio
+de `main` e o día 1 de cada mes. Así, en Linux/macOS con conexión a Internet, `daw-start-doc`
+descárgaas directamente con `docker pull`.
+
+Ademais, ao crear unha etiqueta `docs-AAAA-MM-DD` (ou lanzar o workflow con `publish_release=true`),
+a CI xera e publica os arquivos `.tar.gz` e `SHA256SUMS` como release de GitHub para o paquete
+sen conexión da aula (`windows\classroom\add-doc-images.ps1` en DAW Dev).
+
+Se prefires publicar unha release desde local despois de `scripts/empaquetar.sh` e de facer commit dos cambios:
 
 ```bash
 (cd dist && sha256sum -c SHA256SUMS)
@@ -105,8 +112,8 @@ bash scripts/parar.sh
 
 As aulas usan a infraestrutura de DAW Dev: o paquete que se copia por WinRM aos
 equipos, a Debian de WSL de cada conta e o seu Docker. Os tres arquivos
-engádense a ese paquete con `engadir-imaxe.ps1`, e `daw-start-doc` cárgaos a
-primeira vez en cada conta. O procedemento está na
+engádense a ese paquete con `add-doc-images.ps1` (ou `add-package-image.ps1` desde arquivos locais),
+e `daw-start-doc` cárgaos a primeira vez en cada conta. O procedemento está na
 [guía de despregamento de DAW Dev](https://github.com/miguelfm/daw-dev/blob/main/docs/aula-windows11.md#documentación-sen-conexión-daw-doc).
 
 Na Debian de WSL, `instalar.sh` non basta: WSL pecha a distribución cando

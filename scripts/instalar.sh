@@ -52,7 +52,7 @@ while read -r imaxe; do
         exit 1
     }
     if [ -f SHA256SUMS ]; then
-        grep " $arquivo\$" SHA256SUMS | sha256sum --quiet -c -
+        grep -E "^[0-9a-fA-F]{64} [ *]${arquivo//./\\.}$" SHA256SUMS | sha256sum --quiet -c -
     fi
     echo "Cargando $imaxe..."
     docker load -q -i "$arquivo" </dev/null
@@ -63,7 +63,7 @@ done < <("${COMPOSE[@]}" config --images)
 "${COMPOSE[@]}" up -d --no-build --pull never --remove-orphans --wait --wait-timeout 90
 
 # Comproba os enderezos publicados unha vez que os contedores están listos.
-porto() { "${COMPOSE[@]}" port "$1" "$2" | sed 's/.*://'; }
+porto() { "${COMPOSE[@]}" port "$1" "$2" | head -n 1 | sed 's/.*://'; }
 declare -A URL=(
     [doc-php]="http://localhost:$(porto doc-php 80)/"
     [doc-web]="http://localhost:$(porto doc-web 9292)/"
